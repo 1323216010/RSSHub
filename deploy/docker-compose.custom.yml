@@ -1,0 +1,6 @@
+services:
+    rsshub:
+        image: ghcr.io/1323216010/rsshub:custom
+        pull_policy: always
+
+
