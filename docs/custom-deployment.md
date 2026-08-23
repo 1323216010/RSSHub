@@ -106,30 +106,9 @@ curl -fsS http://127.0.0.1:1200/healthz
 
 公网默认访问地址为 `http://39.102.75.98:1200/`。还需要在云服务器安全组中允许 TCP 1200 入站，或使用反向代理通过 HTTPS 暴露服务。
 
-## 回滚
+## 安全与恢复
 
-先确定要恢复的成功构建提交哈希，然后临时修改 `deploy/docker-compose.custom.yml` 中的镜像标签：
-
-```yaml
-services:
-    rsshub:
-        image: ghcr.io/1323216010/rsshub:custom-<commit-sha>
-```
-
-重新拉取并启动：
-
-```bash
-docker compose -f docker-compose.yml -f deploy/docker-compose.custom.yml pull rsshub
-docker compose -f docker-compose.yml -f deploy/docker-compose.custom.yml up -d rsshub
-```
-
-确认恢复后，将镜像标签改回 `custom`。
-
-## 安全注意事项
-
-- 不要将 SSH 密码、GitHub Token、Cookie 或站点账户凭据提交到 Git。
-- GitHub Actions 使用仓库自动提供的 `GITHUB_TOKEN` 推送镜像。
-- 服务器拉取私有镜像时只使用 `read:packages` 权限。
-- 服务器应使用 SSH 密钥登录，并关闭 root 密码登录。
-- 对公网部署建议设置 RSSHub `ACCESS_KEY`，并通过 HTTPS 反向代理访问。
+- 不要将密码、Token、Cookie 等凭据提交到 Git。
+- 公网部署建议设置 RSSHub `ACCESS_KEY`，并通过 HTTPS 反向代理访问。
+- 每次构建都会保留 `custom-<commit-sha>` 镜像；新版异常时可临时切换到此前正常的标签。
 
